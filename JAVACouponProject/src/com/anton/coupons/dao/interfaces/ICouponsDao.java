@@ -15,7 +15,10 @@ public interface ICouponsDao {
 
 	public Coupon getCoupon(long couponID) throws ApplicationException;
 
-	public List<Coupon> getCouponsByType(int couponType);
+	public List<Coupon> getCouponsByType(int couponType) throws ApplicationException;
 
-	public List<Coupon> getAllCoupons();
+	public List<Coupon> getAllCoupons() throws ApplicationException;
+
+	public List<Coupon> getCouponsByCompanyID(int companyID) throws ApplicationException;
+
 }

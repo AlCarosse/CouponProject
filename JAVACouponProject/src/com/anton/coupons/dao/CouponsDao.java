@@ -2,6 +2,7 @@ package com.anton.coupons.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.anton.coupons.dao.interfaces.ICouponsDao;
@@ -135,18 +136,18 @@ public class CouponsDao implements ICouponsDao {
 		try {
 			// Establish connection to database
 			connection = ConnectionPool.getConnection();
-			
+
 			sql = "SELECT * FROM dbcoupons.tbl_coupons WHERE coupon_ID = ?";
-			
+
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setLong(1, couponID);
-			
+
 			resultSet = preparedStatement.executeQuery();
-			
+
 			if (resultSet.next() == false) {
 				return null;
-			} 
-			
+			}
+
 			couponToReturn = extractCouponFromResultSet(resultSet);
 
 		} catch (ClassNotFoundException | SQLException e) {
@@ -162,14 +163,118 @@ public class CouponsDao implements ICouponsDao {
 
 	}
 
-	private Coupon extractCouponFromResultSet(ResultSet resultSet) {
+	@Override
+	public List<Coupon> getCouponsByType(int couponType) throws ApplicationException {
+
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		List<Coupon> coupons = new ArrayList<Coupon>();
+		Coupon coupon;
+		String sql;
+
+		try {
+			connection = ConnectionPool.getConnection();
+			sql = "SELECT * FROM dbcoupons.tbl_coupons WHERE coupon_type = ? ";
+
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setLong(1, couponType);
+
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				coupon = extractCouponFromResultSet(resultSet);
+				coupons.add(coupon);
+			}
+
+		} catch (ClassNotFoundException | SQLException e) {
+			throw new ApplicationException(ErrorType.DAO_UPDATE_ERROR, e,
+					"Failed to update coupon due to :" + e.getMessage());
+		} finally {
+			// Close connection to database
+			ConnectionPool.closeResources(connection, preparedStatement);
+		}
+
+		return coupons;
+
+	}
+
+	@Override
+	public List<Coupon> getCouponsByCompanyID(int companyID) throws ApplicationException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		List<Coupon> coupons = new ArrayList<Coupon>();
+		Coupon coupon;
+		String sql;
+
+		try {
+			connection = ConnectionPool.getConnection();
+			sql = "SELECT * FROM dbcoupons.tbl_coupons WHERE company_ID = ? ";
+
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setLong(1, companyID);
+
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				coupon = extractCouponFromResultSet(resultSet);
+				coupons.add(coupon);
+			}
+
+		} catch (ClassNotFoundException | SQLException e) {
+			throw new ApplicationException(ErrorType.DAO_UPDATE_ERROR, e,
+					"Failed to update coupon due to :" + e.getMessage());
+		} finally {
+			// Close connection to database
+			ConnectionPool.closeResources(connection, preparedStatement);
+		}
+
+		return coupons;
+
+	}
+
+	@Override
+	public List<Coupon> getAllCoupons() throws ApplicationException {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		List<Coupon> coupons = new ArrayList<Coupon>();
+		Coupon coupon;
+		String sql;
+
+		try {
+			connection = ConnectionPool.getConnection();
+			sql = "SELECT * FROM dbcoupons.tbl_coupons ";
+
+			preparedStatement = connection.prepareStatement(sql);
+
+			resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				coupon = extractCouponFromResultSet(resultSet);
+				coupons.add(coupon);
+			}
+
+		} catch (ClassNotFoundException | SQLException e) {
+			throw new ApplicationException(ErrorType.DAO_UPDATE_ERROR, e,
+					"Failed to update coupon due to :" + e.getMessage());
+		} finally {
+			// Close connection to database
+			ConnectionPool.closeResources(connection, preparedStatement);
+		}
+
+		return coupons;
+
+	}
+
+	public Coupon extractCouponFromResultSet(ResultSet resultSet) {
 		Coupon coupon = null;
 		try {
-			coupon = new Coupon(   resultSet.getLong("coupon_ID"),        resultSet.getString("title"),
-								   resultSet.getLong("start_date"),       resultSet.getLong("end_date"), 
-    			                   resultSet.getInt("amount_in_stock"),   resultSet.getInt("coupon_type_ID"), 
-        		                   resultSet.getString("messege"),        resultSet.getFloat("price"),
-    			                   resultSet.getString("image"),          resultSet.getLong("company_ID"));
+			coupon = new Coupon(resultSet.getLong("coupon_ID"), resultSet.getString("title"),
+					resultSet.getLong("start_date"), resultSet.getLong("end_date"), resultSet.getInt("amount_in_stock"),
+					resultSet.getInt("coupon_type_ID"), resultSet.getString("messege"), resultSet.getFloat("price"),
+					resultSet.getString("image"), resultSet.getLong("company_ID"));
 
 		} catch (SQLException e) {
 
@@ -180,174 +285,4 @@ public class CouponsDao implements ICouponsDao {
 		return coupon;
 	}
 
-	@Override
-	public List<Coupon> getCouponsByType(int couponType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Coupon> getAllCoupons() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
